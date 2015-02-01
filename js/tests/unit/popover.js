@@ -188,7 +188,7 @@ $(function () {
     equal($('.popover').length, 0, 'popover was removed')
   })
 
-  test('should detach popover content rather than removing it so that event handlers are left intact', function () {
+  test('should detach popover content rather than removing it so that event handlers are left intact', function (assert) {
     var $content = $('<div class="content-with-handler"><a class="btn btn-warning">Button with event handler</a></div>').appendTo('#qunit-fixture')
 
     var handlerCalled = false
@@ -207,7 +207,7 @@ $(function () {
         }
       })
 
-    stop()
+    var done = assert.async()
     $div
       .one('shown.bs.popover', function () {
         $div
@@ -217,7 +217,7 @@ $(function () {
                 $('.content-with-handler .btn').click()
                 $div.bootstrapPopover('destroy')
                 ok(handlerCalled, 'content\'s event handler still present')
-                start()
+                done()
               })
               .bootstrapPopover('show')
           })
@@ -225,4 +225,11 @@ $(function () {
       })
       .bootstrapPopover('show')
   })
+
+  test('should throw an error when initializing popover on the document object without specifying a delegation selector', function () {
+    throws(function () {
+      $(document).bootstrapPopover({ title: 'What am I on?', content: 'My selector is missing' })
+    }, new Error('`selector` option must be specified when initializing popover on the window.document object!'))
+  })
+
 })
